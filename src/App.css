@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bx {
+  box-shadow: 0px 5px #484848;
+  border: 2px solid #484848;
+}
+body {
+  font-family: "Fira Code", serif;
+}
+
+.bx-shadow {
+  box-shadow: inset 0px 1px 0px 0px hsla(0, 0%, 100%, 0.03),
+    inset 0px 0px 0px 1px hsla(0, 0%, 100%, 0.03),
+    0px 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 2px 2px 0px rgba(0, 0, 0, 0.1),
+    0px 4px 4px 0px rgba(0, 0, 0, 0.1), 0px 8px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.bx-shadow-light {
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05), inset 0px 1px 1px 0px #fff,
+    inset 0px 0px 0px 1px hsla(0, 0%, 100%, 0.1),
+    0px 0px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.text-effect {
+    font-weight: bold; 
+    text-shadow: -3px 0px 0px #484848; /* Shadow on the left */
+    letter-spacing: 0.2rem;
+    
+  }
+  
