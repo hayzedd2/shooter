@@ -4,5 +4,6 @@ export interface GameStateControl {
 }
 export type difficultyState = "easy" | "medium" | "hard";
 export interface DifficultyControllerProp {
+  difficulty: difficultyState,
   setDifficulty: React.Dispatch<React.SetStateAction<difficultyState>>;
 }

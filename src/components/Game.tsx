@@ -5,6 +5,7 @@ import { Player } from "./reusableComponents/Player";
 import { Enemy } from "./reusableComponents/Enemy";
 import { getDifficulty } from "../helpers/getDifficulty";
 import DifficultyController from "./reusableComponents/DifficultyController";
+import { Bullet } from "./reusableComponents/Bullet";
 
 const Game = ({ setGameState }: GameStateControl) => {
   const canvasHeight = 600;
@@ -15,17 +16,22 @@ const Game = ({ setGameState }: GameStateControl) => {
     x: canvasWidth / 2,
     y: canvasHeight - playerSize,
   });
+  const bulletsRef = useRef<{ x: number; y: number }[]>([]);
   const enemiesRef = useRef<{ x: number; y: number }[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number>();
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<difficultyState>("easy");
+  const lastEnemySpawnTimeRef = useRef(0);
   useKeys({
-    keys: ["ArrowLeft", "ArrowRight"],
+    keys: ["ArrowLeft", "ArrowRight", " "],
     triggerOnAnyKey: true,
     enableKeyRepeatOnHold: true,
     callback: (e) => {
       if (e.key == "ArrowRight") movePlayer("right");
       if (e.key == "ArrowLeft") movePlayer("left");
+      if (e.key == " ") shoot();
     },
   });
 
@@ -39,6 +45,14 @@ const Game = ({ setGameState }: GameStateControl) => {
       playerRef.current.x += 10;
     }
   };
+
+  const shoot = () => {
+    bulletsRef.current.push({
+      x: playerRef.current.x + playerSize / 2,
+      y: playerRef.current.y,
+    });
+  };
+  
   const { spawnRate, movementSpeed } = getDifficulty(difficulty);
 
   useEffect(() => {
@@ -46,42 +60,85 @@ const Game = ({ setGameState }: GameStateControl) => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const gameLoop = () => {
+    const gameLoop = (timestamp: number) => {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      // draw player
+      //   draw player
       Player(ctx, playerRef.current.x, playerRef.current.y);
 
-      // draw enemies
+      //   draw enemies
       enemiesRef.current = enemiesRef.current.filter((enemy) => {
         Enemy(ctx, enemy.x, enemy.y);
         enemy.y += movementSpeed;
         return enemy.y < canvasHeight;
       });
+      // draw bullets
+      bulletsRef.current = bulletsRef.current.filter((bullet) => {
+        Bullet(ctx, bullet.x, bullet.y);
+        bullet.y -= 5;
+        return bullet.y > 0;
+      });
+
 
       // Spawn new enemies
-      if (Math.random() < spawnRate) {
+      if (timestamp - lastEnemySpawnTimeRef.current >= spawnRate) {
         enemiesRef.current.push({
           x: Math.random() * (canvasWidth - EnemySize),
           y: 0,
         });
+        lastEnemySpawnTimeRef.current = timestamp;
       }
-      animationFrameRef.current = requestAnimationFrame(gameLoop);
+
+      // check bullet colision
+
+      bulletsRef.current = bulletsRef.current.filter((bullet) => {
+        let hit = false;
+        enemiesRef.current = enemiesRef.current.filter((enemy) => {
+          if (
+            Math.abs(bullet.x - enemy.x) < EnemySize &&
+            Math.abs(bullet.y - enemy.y) < EnemySize
+          ) {
+            hit = true;
+            setScore((prevScore) => prevScore + 10);
+            return false;
+          }
+          return true;
+        });
+        return !hit;
+      });
+
+      if (
+        enemiesRef.current.some((enemy) => enemy.y > canvasHeight - playerSize)
+      ) {
+        setGameOver(true);
+        setGameState("over");
+      }
+
+      if (!gameOver) {
+        animationFrameRef.current = requestAnimationFrame(gameLoop);
+      }
     };
 
-    gameLoop();
+    lastEnemySpawnTimeRef.current = performance.now();
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [difficulty]);
+  }, [difficulty, gameOver]);
 
   return (
-    <div className=" text-[2rem]">
-      <DifficultyController setDifficulty={setDifficulty} />
-      <p>
-        {difficulty} {spawnRate} {movementSpeed}
-      </p>
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <DifficultyController difficulty={difficulty} setDifficulty={setDifficulty} />
+        <div>
+          <p>
+            Score: <span>{score}</span>
+          </p>
+        </div>
+      </div>
+
       <canvas
         ref={canvasRef}
         width={canvasWidth}
