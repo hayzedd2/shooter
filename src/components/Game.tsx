@@ -6,12 +6,13 @@ import { Enemy } from "./reusableComponents/Enemy";
 import { getDifficulty } from "../helpers/getDifficulty";
 import DifficultyController from "./reusableComponents/DifficultyController";
 import { Bullet } from "./reusableComponents/Bullet";
+import GameControlHelper from "./reusableComponents/GameControlHelper";
+const canvasHeight = 400;
+const canvasWidth = 500;
+const playerSize = 50;
+const EnemySize = 30;
 
 const Game = ({ setGameState }: GameStateControl) => {
-  const canvasHeight = 600;
-  const canvasWidth = 500;
-  const playerSize = 50;
-  const EnemySize = 30;
   const playerRef = useRef({
     x: canvasWidth / 2,
     y: canvasHeight - playerSize,
@@ -52,7 +53,7 @@ const Game = ({ setGameState }: GameStateControl) => {
       y: playerRef.current.y,
     });
   };
-  
+
   const { spawnRate, movementSpeed } = getDifficulty(difficulty);
 
   useEffect(() => {
@@ -77,7 +78,6 @@ const Game = ({ setGameState }: GameStateControl) => {
         bullet.y -= 5;
         return bullet.y > 0;
       });
-
 
       // Spawn new enemies
       if (timestamp - lastEnemySpawnTimeRef.current >= spawnRate) {
@@ -131,7 +131,10 @@ const Game = ({ setGameState }: GameStateControl) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <DifficultyController difficulty={difficulty} setDifficulty={setDifficulty} />
+        <DifficultyController
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+        />
         <div>
           <p>
             Score: <span>{score}</span>
@@ -145,6 +148,7 @@ const Game = ({ setGameState }: GameStateControl) => {
         height={canvasHeight}
         className="border border-gray-300 rounded-md"
       />
+      <GameControlHelper />
     </div>
   );
 };

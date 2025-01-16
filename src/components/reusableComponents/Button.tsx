@@ -8,7 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button: React.FC<ButtonProps> = ({ children, width, ...rest }) => {
   return (
     <button
-      className="py-3 bx bg-gray-400 font-[600] text-white rounded-xl"
+      className="py-3 bx bg-gray-400 flex items-center justify-center font-[600] text-white rounded-xl"
       style={{ width }}
       {...rest}
     >

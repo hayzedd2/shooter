@@ -12,7 +12,7 @@ const Pill = ({ text, margin = true, link = false, active= false }: PillProps) =
       style={{
         marginLeft: margin ? "4px" : 0,
       }}
-      className={`${active ? "bg-gray-200 " : ""}whitespace-nowrap  border w-max border-[#EBEBEB] text-[13px] rounded-[0.375rem] py-[3px] px-[5px]`}
+      className={`${active ? "bg-gray-100 " : ""}whitespace-nowrap  border w-max border-[#EBEBEB] text-[13px] rounded-[0.375rem] py-[3px] px-[5px]`}
     >
       {text}
       {link && <Link />}
