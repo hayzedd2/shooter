@@ -41,7 +41,7 @@ export const useHighScoreStore = create<HighScoreProps>()(
         })),
     }),
     {
-      name: "shooter-high-score",
+      name: "shooter-high-score",    
     }
   )
 );

@@ -139,7 +139,6 @@ const Game = ({ setGameState }: GameStateControl) => {
           difficulty={difficulty}
           setDifficulty={setDifficulty}
         />
-
         <p>
           Score: <span>{score}</span>
         </p>
