@@ -6,17 +6,16 @@ import IdleGame from "./components/IdleGame";
 import { GameState } from "./types/type";
 import NotAllowed from "./components/NotAllowed";
 import Footer from "./components/reusableComponents/Footer";
-import useDeviceType from "./helpers/useDeviceType";
+import {isMobile} from "react-device-detect"
 
 function App() {
   const [gameState, setGameState] = useState<GameState>("idle");
-  const deviceType = useDeviceType();
-
+  
   return (
     <main className="min-h-[100dvh] w-full flex items-center justify-center px-4">
       {gameState == "idle" && <IdleGame setGameState={setGameState} />}
       {gameState == "active" &&
-        (deviceType == "desktop" ? (
+        (!isMobile ? (
           <Game setGameState={setGameState} />
         ) : (
           <NotAllowed />

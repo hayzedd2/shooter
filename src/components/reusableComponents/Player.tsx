@@ -12,7 +12,7 @@ const Player = ({ x, y }: PlayerProps) => {
         top: `${y}px`,
         bottom: 0,
       }}
-      className="bg-cover player-bg flex items-end  justify-end bg-center bg-no-repeat absolute w-[80px] h-[80px]"
+      className="bg-cover player-bg  flex items-end  justify-end bg-center bg-no-repeat absolute w-[80px] h-[80px]"
     ></div>
   );
 };

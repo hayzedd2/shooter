@@ -32,5 +32,5 @@ body {
 }
 
 .player-bg {
-    background-image: url("../public/ship.png");
+    background-image: url("/ship.png");
 }

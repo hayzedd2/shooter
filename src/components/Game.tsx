@@ -7,11 +7,11 @@ import DifficultyController from "./reusableComponents/DifficultyController";
 import { Bullet } from "./reusableComponents/Bullet";
 import GameControlHelper from "./reusableComponents/GameControlHelper";
 import Player from "./reusableComponents/Player";
-import { useScoreStore } from "../store/useScoreStore";
+import { useHighScoreStore, useScoreStore } from "../store/useScoreStore";
 const canvasHeight = 500;
 const canvasWidth = 500;
 const playerSize = 80;
-const margin = 50
+const margin = 50;
 const EnemySize = 30;
 
 const Game = ({ setGameState }: GameStateControl) => {
@@ -19,11 +19,12 @@ const Game = ({ setGameState }: GameStateControl) => {
     x: canvasWidth / 2,
     y: canvasHeight - playerSize,
   });
-  const [playerPosition, setPlayerPosition] = useState({
+  const [_, setPlayerPosition] = useState({
     x: canvasWidth / 2,
-    y: canvasHeight - playerSize, // Initial position
+    y: canvasHeight - playerSize,
   });
-  const {score, updateScore}= useScoreStore()
+  const { score, updateScore } = useScoreStore();
+  const highScore = useHighScoreStore((state)=> state.highScore);
   const bulletsRef = useRef<{ x: number; y: number }[]>([]);
   const enemiesRef = useRef<{ x: number; y: number }[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,7 +66,6 @@ const Game = ({ setGameState }: GameStateControl) => {
     });
   };
   const { spawnRate, movementSpeed } = getDifficulty(difficulty);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -88,7 +88,7 @@ const Game = ({ setGameState }: GameStateControl) => {
       // Spawn new enemies
       if (timestamp - lastEnemySpawnTimeRef.current >= spawnRate) {
         enemiesRef.current.push({
-            x: Math.random() * (canvasWidth - EnemySize - 2 * margin) + margin,
+          x: Math.random() * (canvasWidth - EnemySize - 2 * margin) + margin,
           y: 0,
         });
         lastEnemySpawnTimeRef.current = timestamp;
@@ -104,7 +104,7 @@ const Game = ({ setGameState }: GameStateControl) => {
             Math.abs(bullet.y - enemy.y) < EnemySize
           ) {
             hit = true;
-            updateScore(10)
+            updateScore(10);
             return false;
           }
           return true;
@@ -123,10 +123,8 @@ const Game = ({ setGameState }: GameStateControl) => {
         animationFrameRef.current = requestAnimationFrame(gameLoop);
       }
     };
-
     lastEnemySpawnTimeRef.current = performance.now();
     animationFrameRef.current = requestAnimationFrame(gameLoop);
-
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -141,11 +139,13 @@ const Game = ({ setGameState }: GameStateControl) => {
           difficulty={difficulty}
           setDifficulty={setDifficulty}
         />
-        <div>
-          <p>
-            Score: <span>{score}</span>
-          </p>
-        </div>
+
+        <p>
+          Score: <span>{score}</span>
+        </p>
+        <p>
+          Highscore: <span>{highScore}</span>
+        </p>
       </div>
 
       <div
@@ -159,7 +159,7 @@ const Game = ({ setGameState }: GameStateControl) => {
           className="border border-gray-300 rounded-md"
         />
         {/* Overlay the player div */}
-        <Player x={playerRef.current.x} y={playerPosition.y} />
+        <Player x={playerRef.current.x} y={playerRef.current.y} />
       </div>
 
       <GameControlHelper />
