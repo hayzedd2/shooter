@@ -5,11 +5,11 @@
 
 ## Who cares? why did you build this?
 
-To show how easy you can manage keyboard events why focusing on the main logic of your game.
+To show how easy you can manage keyboard events while focusing on the main logic of your game.
 
 ## Show me
 
-- See for instance, how this game controls is being set up
+- See for instance, how this game control is being set up
 
 ```tsx
  useKeys({
