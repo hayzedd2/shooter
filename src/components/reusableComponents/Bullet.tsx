@@ -1,8 +1,5 @@
 export function Bullet(ctx: CanvasRenderingContext2D, x: number, y: number) {
-    ctx.fillStyle = 'red'
-    ctx.beginPath()
-    ctx.arc(x, y, 4, 0, Math.PI * 2)
-    ctx.fill()
+      ctx.fillStyle = 'red';
+    ctx.fillRect(x - 2, y, 4, 12);
   }
-  
   

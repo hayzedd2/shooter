@@ -1,15 +1,17 @@
 import { useKeys } from "use-keys-bindings";
 import { difficultyState, GameStateControl } from "../types/type";
 import { useEffect, useRef, useState } from "react";
-import { Player } from "./reusableComponents/Player";
 import { Enemy } from "./reusableComponents/Enemy";
 import { getDifficulty } from "../helpers/getDifficulty";
 import DifficultyController from "./reusableComponents/DifficultyController";
 import { Bullet } from "./reusableComponents/Bullet";
 import GameControlHelper from "./reusableComponents/GameControlHelper";
-const canvasHeight = 400;
+import Player from "./reusableComponents/Player";
+import { useScoreStore } from "../store/useScoreStore";
+const canvasHeight = 500;
 const canvasWidth = 500;
-const playerSize = 50;
+const playerSize = 80;
+const margin = 50
 const EnemySize = 30;
 
 const Game = ({ setGameState }: GameStateControl) => {
@@ -17,12 +19,16 @@ const Game = ({ setGameState }: GameStateControl) => {
     x: canvasWidth / 2,
     y: canvasHeight - playerSize,
   });
+  const [playerPosition, setPlayerPosition] = useState({
+    x: canvasWidth / 2,
+    y: canvasHeight - playerSize, // Initial position
+  });
+  const {score, updateScore}= useScoreStore()
   const bulletsRef = useRef<{ x: number; y: number }[]>([]);
   const enemiesRef = useRef<{ x: number; y: number }[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number>();
   const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<difficultyState>("easy");
   const lastEnemySpawnTimeRef = useRef(0);
   useKeys({
@@ -37,14 +43,19 @@ const Game = ({ setGameState }: GameStateControl) => {
   });
 
   const movePlayer = (direction: "left" | "right") => {
-    if (direction == "left" && playerRef.current.x > 0) {
-      playerRef.current.x -= 10;
-    } else if (
-      direction == "right" &&
-      playerRef.current.x < canvasWidth - playerSize
-    ) {
-      playerRef.current.x += 10;
-    }
+    setPlayerPosition((prevPosition) => {
+      let newX = prevPosition.x;
+      if (direction === "left" && prevPosition.x > 0) {
+        newX -= 10;
+      } else if (
+        direction === "right" &&
+        prevPosition.x < canvasWidth - playerSize
+      ) {
+        newX += 10;
+      }
+      playerRef.current = { ...playerRef.current, x: newX };
+      return { ...prevPosition, x: newX };
+    });
   };
 
   const shoot = () => {
@@ -53,7 +64,6 @@ const Game = ({ setGameState }: GameStateControl) => {
       y: playerRef.current.y,
     });
   };
-
   const { spawnRate, movementSpeed } = getDifficulty(difficulty);
 
   useEffect(() => {
@@ -63,10 +73,6 @@ const Game = ({ setGameState }: GameStateControl) => {
     if (!ctx) return;
     const gameLoop = (timestamp: number) => {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      //   draw player
-      Player(ctx, playerRef.current.x, playerRef.current.y);
-
-      //   draw enemies
       enemiesRef.current = enemiesRef.current.filter((enemy) => {
         Enemy(ctx, enemy.x, enemy.y);
         enemy.y += movementSpeed;
@@ -82,7 +88,7 @@ const Game = ({ setGameState }: GameStateControl) => {
       // Spawn new enemies
       if (timestamp - lastEnemySpawnTimeRef.current >= spawnRate) {
         enemiesRef.current.push({
-          x: Math.random() * (canvasWidth - EnemySize),
+            x: Math.random() * (canvasWidth - EnemySize - 2 * margin) + margin,
           y: 0,
         });
         lastEnemySpawnTimeRef.current = timestamp;
@@ -98,7 +104,7 @@ const Game = ({ setGameState }: GameStateControl) => {
             Math.abs(bullet.y - enemy.y) < EnemySize
           ) {
             hit = true;
-            setScore((prevScore) => prevScore + 10);
+            updateScore(10)
             return false;
           }
           return true;
@@ -142,12 +148,20 @@ const Game = ({ setGameState }: GameStateControl) => {
         </div>
       </div>
 
-      <canvas
-        ref={canvasRef}
-        width={canvasWidth}
-        height={canvasHeight}
-        className="border border-gray-300 rounded-md"
-      />
+      <div
+        className="relative p-0"
+        style={{ width: canvasWidth, height: canvasHeight }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={canvasWidth}
+          height={canvasHeight}
+          className="border border-gray-300 rounded-md"
+        />
+        {/* Overlay the player div */}
+        <Player x={playerRef.current.x} y={playerPosition.y} />
+      </div>
+
       <GameControlHelper />
     </div>
   );

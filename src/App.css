@@ -26,9 +26,11 @@ body {
 }
 
 .text-effect {
-    font-weight: bold; 
-    text-shadow: -3px 0px 0px #484848; /* Shadow on the left */
-    letter-spacing: 0.2rem;
-    
-  }
-  
+  font-weight: bold;
+  text-shadow: -3px 0px 0px #484848; /* Shadow on the left */
+  letter-spacing: 0.2rem;
+}
+
+.player-bg {
+    background-image: url("../public/ship.png");
+}
