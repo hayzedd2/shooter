@@ -32,6 +32,7 @@ const Game = ({ setGameState }: GameStateControl) => {
   const [gameOver, setGameOver] = useState(false);
   const [difficulty, setDifficulty] = useState<difficultyState>("easy");
   const lastEnemySpawnTimeRef = useRef(0);
+
   useKeys({
     keys: ["ArrowLeft", "ArrowRight", " "],
     triggerOnAnyKey: true,
@@ -73,6 +74,7 @@ const Game = ({ setGameState }: GameStateControl) => {
     if (!ctx) return;
     const gameLoop = (timestamp: number) => {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    //   draw enemies
       enemiesRef.current = enemiesRef.current.filter((enemy) => {
         Enemy(ctx, enemy.x, enemy.y);
         enemy.y += movementSpeed;
@@ -96,7 +98,7 @@ const Game = ({ setGameState }: GameStateControl) => {
 
       // check bullet colision
 
-      bulletsRef.current = bulletsRef.current.filter((bullet) => {
+      bulletsRef.current = bulletsRef.current.filter((bullet) => {       
         let hit = false;
         enemiesRef.current = enemiesRef.current.filter((enemy) => {
           if (

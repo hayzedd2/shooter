@@ -32,13 +32,15 @@ const About = () => {
         </h2>
       </div>
       <p className="text-[14px] leading-[24px] text-center">
-        A <Pill text="smol" /> shooting game. Why did i build this? - To
-        show how easy it is to handle keyboard events using a package I
-        created called
-        <a href="">
+        A <Pill text="smol" /> shooting game. Why did i build this? - To show
+        how easy it is to handle keyboard events using a package I created
+        called
+        <a
+          href="https://www.npmjs.com/package/use-keys-bindings"
+          target="_blank"
+        >
           <Pill text="use-keys-bindings" link />
         </a>
-        
       </p>
     </div>
   );
